@@ -4,6 +4,7 @@ import InfiniteScroll from "./components/InfiniteScroll";
 import ButtonCustom from "./components/ButtonCustom";
 
 // TODO: que el checkbox se seleccione solo
+// Preparar con boton de cargar mas
 
 const App = () => {
   const columns = [
@@ -25,7 +26,7 @@ const App = () => {
       sortable: true,
       render: (field: any) => (
         <div>
-          <ButtonCustom onClick={() => alert("Clicked!")}>
+          <ButtonCustom onClick={() => alert("Yeah! " + field)}>
             Status: {field}
           </ButtonCustom>
         </div>
@@ -61,7 +62,7 @@ const App = () => {
       const newItems = await getPokemonAPI(pageNum);
       // setTimeout(async () => {
       newItems.map((item: any) => {
-        item.id = Math.floor(Math.random() * 50);
+        item.id = Math.floor(Math.random() * 1000);
         return item;
       });
       setTableRows((prevItems: any) => [...prevItems, ...newItems]);

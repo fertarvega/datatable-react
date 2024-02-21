@@ -42,9 +42,13 @@ const TableHeader: React.FC<Props> = ({
                 {column.name}
                 {column.sortable && ( // Renderizamos el icono de ordenamiento si la columna es sortable
                   <button onClick={() => onColumnSort(column.field)}>
-                    {sortField === column.field && sortOrder === "asc" && "↑"}
-                    {sortField === column.field && sortOrder === "desc" && "↓"}
-                    {sortField !== column.field && "↕"}
+                    {sortField === column.field && sortOrder !== "default"
+                      ? sortOrder === "asc"
+                        ? "↑"
+                        : sortOrder === "desc"
+                        ? "↓"
+                        : ""
+                      : "↕"}
                   </button>
                 )}
               </>
@@ -53,9 +57,13 @@ const TableHeader: React.FC<Props> = ({
                 {column.name}
                 {column.sortable && ( // Renderizamos el icono de ordenamiento si la columna es sortable
                   <button onClick={() => onColumnSort(column.field)}>
-                    {sortField === column.field && sortOrder === "asc" && "↑"}
-                    {sortField === column.field && sortOrder === "desc" && "↓"}
-                    {sortField !== column.field && "↕"}
+                    {sortField === column.field && sortOrder !== "default"
+                      ? sortOrder === "asc"
+                        ? "↑"
+                        : sortOrder === "desc"
+                        ? "↓"
+                        : ""
+                      : "↕"}
                   </button>
                 )}
               </span>
