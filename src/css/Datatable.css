@@ -1,0 +1,39 @@
+.table-container {
+  overflow-x: auto;
+  border: 1px solid #c5c6c5;
+  border-radius: 4px;
+}
+
+.responsive-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+.responsive-table th,
+.responsive-table td {
+  padding: 10px;
+}
+
+.responsive-table th {
+  text-align: left;
+  border-bottom: 1px solid #c5c6c5;
+}
+
+.responsive-table tr {
+  text-align: left;
+  border-bottom: 1px solid #c5c6c5;
+}
+
+@media (max-width: 450px) {
+  .responsive-table th,
+  .responsive-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .responsive-table th {
+    text-align: left;
+  }
+}

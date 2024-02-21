@@ -1,0 +1,17 @@
+.button-custom {
+    background-color: orange; /* Color de fondo naranja */
+    color: white; /* Color de texto blanco */
+    padding: 10px 20px; /* Espaciado interior del botón */
+    border: none; /* Elimina el borde del botón */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor al pasar por encima */
+  
+    /* Transición suave al pasar el ratón */
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  /* Estilos al pasar el ratón por encima del botón */
+  .button-custom:hover {
+    background-color: purple; /* Cambia el color de fondo a morado */
+  }
+  

@@ -1,4 +1,70 @@
-:root {
+.custom-select {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.selected-value {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  user-select: none;
+  /* max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; */
+}
+
+.arrow-icon {
+  margin-left: auto;
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.arrow-icon.open {
+  transform: rotate(180deg);
+}
+
+.options-container {
+  position: absolute;
+  z-index: 1000;
+}
+
+.options {
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  background-color: #fff;
+}
+
+.option {
+  padding: 8px;
+  cursor: pointer;
+  user-select: none;
+  width: max-content;
+}
+
+/* .option:hover {
+  background-color: #f0f0f0;
+} */
+.test {
+  width: 100%;
+}
+.test:hover {
+  background-color: #f0f0f0;
+}
+
+.highlighted {
+  background-color: #f0f0f0;
+
+}
+.highlighted:hover {
+  background-color: #f0f0f0;
+}
+
+/* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -66,4 +132,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */
