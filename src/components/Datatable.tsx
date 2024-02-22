@@ -10,11 +10,12 @@ interface Props {
     name: string;
     sortable: boolean;
     render?: (data: any) => React.ReactNode;
-    checkbox?: boolean; // Nueva prop para indicar si la columna es un checkbox
+    checkbox?: boolean;
   }[];
   data: any[];
   handleScroll: (e: any) => void;
   onSelectionChange: React.Dispatch<React.SetStateAction<any[]>>;
+  selectAllOnLoad: boolean;
 }
 
 const DataTable: React.FC<Props> = ({
@@ -22,6 +23,7 @@ const DataTable: React.FC<Props> = ({
   data,
   handleScroll,
   onSelectionChange,
+  selectAllOnLoad,
 }) => {
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [sortedData, setSortedData] = useState<any[]>(data);
@@ -65,7 +67,7 @@ const DataTable: React.FC<Props> = ({
     }
   };
 
-  function handleSort(arr: any[], field: string) {
+  const handleSort = (arr: any[], field: string) => {
     setSortedData(
       sortByStringNumberDate(arr.map((obj) => obj[field])).map((item: any) =>
         arr.find((obj) => obj[field] === item)
@@ -73,7 +75,7 @@ const DataTable: React.FC<Props> = ({
     );
   }
 
-  function sortByStringNumberDate(arr: any[]) {
+  const sortByStringNumberDate = (arr: any[]) => {
     function convertToDate(fechaStr: string): Date {
       const partes = fechaStr.split("/");
       return new Date(
@@ -118,6 +120,8 @@ const DataTable: React.FC<Props> = ({
   useEffect(() => {
     setSortedData(data);
     setDefaultData(data);
+    setSelectedRows(selectAllOnLoad ? data : []);
+    onSelectionChange(selectAllOnLoad ? data : []);
   }, [data]);
 
   return (

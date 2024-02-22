@@ -10,9 +10,9 @@ interface Props {
   }[];
   toggleAllRows: (checked: boolean) => void;
   allRowsSelected: boolean;
-  onColumnSort: (field: string) => void; // Nueva función para manejar el clic en el encabezado de la columna
-  sortField: string | null; // Nuevo estado para el campo de clasificación actual
-  sortOrder: "asc" | "desc" | "default"; // Nuevo estado para el orden de clasificación actual
+  onColumnSort: (field: string) => void;
+  sortField: string | null;
+  sortOrder: "asc" | "desc" | "default";
 }
 
 const TableHeader: React.FC<Props> = ({
@@ -40,7 +40,7 @@ const TableHeader: React.FC<Props> = ({
                   onChange={handleToggleAllRows}
                 />
                 {column.name}
-                {column.sortable && ( // Renderizamos el icono de ordenamiento si la columna es sortable
+                {column.sortable && (
                   <button onClick={() => onColumnSort(column.field)}>
                     {sortField === column.field && sortOrder !== "default"
                       ? sortOrder === "asc"
@@ -55,7 +55,7 @@ const TableHeader: React.FC<Props> = ({
             ) : (
               <span>
                 {column.name}
-                {column.sortable && ( // Renderizamos el icono de ordenamiento si la columna es sortable
+                {column.sortable && (
                   <button onClick={() => onColumnSort(column.field)}>
                     {sortField === column.field && sortOrder !== "default"
                       ? sortOrder === "asc"

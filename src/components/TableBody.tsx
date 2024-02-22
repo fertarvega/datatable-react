@@ -5,11 +5,11 @@ interface Props {
   columns: {
     field: string;
     render?: (data: any) => React.ReactNode;
-    checkbox?: boolean; // Nueva prop para indicar si la columna es un checkbox
+    checkbox?: boolean;
   }[];
   data: any[];
-  selectedRows: any[]; // Cambiado a any[]
-  toggleRow: (row: any) => void; // Cambiado a any
+  selectedRows: any[];
+  toggleRow: (row: any) => void;
 }
 
 const TableBody: React.FC<Props> = ({
@@ -28,8 +28,8 @@ const TableBody: React.FC<Props> = ({
                 <>
                   <input
                     type="checkbox"
-                    checked={selectedRows.includes(row)} // Comprobamos si la fila está seleccionada
-                    onChange={() => toggleRow(row)} // Pasamos la fila completa al método toggleRow
+                    checked={selectedRows.includes(row)}
+                    onChange={() => toggleRow(row)}
                   />
                   {column.render
                     ? column.render(row[column.field])

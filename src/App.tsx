@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import Datatable from "./components/Datatable";
-import InfiniteScroll from "./components/InfiniteScroll";
 import ButtonCustom from "./components/ButtonCustom";
-
-// TODO: que el checkbox se seleccione solo
-// Preparar con boton de cargar mas
+import Table from "./NewTable/Table";
+import TableColumn from "./NewTable/TableColumn";
+import TableHeader from "./NewTable/TableHeader";
+import TableBody from "./NewTable/TableBody";
+import TableData from "./NewTable/TableData";
 
 const App = () => {
   const columns = [
@@ -47,7 +48,7 @@ const App = () => {
       `https://pokeapi.co/api/v2/pokemon/?offset=${page}&limit=10`
     ).then((response) => {
       const res = response.json().then((data) => {
-        console.log(data);
+        // console.log(data);
         return data.results;
       });
       return res;
@@ -62,7 +63,8 @@ const App = () => {
       const newItems = await getPokemonAPI(pageNum);
       // setTimeout(async () => {
       newItems.map((item: any) => {
-        item.id = Math.floor(Math.random() * 1000);
+        item.id = Math.floor(Math.random() * 100);
+        item.details = { name: item.name, url: item.url};
         return item;
       });
       setTableRows((prevItems: any) => [...prevItems, ...newItems]);
@@ -98,20 +100,52 @@ const App = () => {
   return (
     <>
       <div>
-        {tableRows && (
+        {/* {tableRows && (
           <Datatable
             handleScroll={handleScroll}
             data={tableRows}
             columns={columns}
             onSelectionChange={setSelectedRows}
+            selectAllOnLoad
           />
-        )}
+        )} */}
+
+        <Table
+          data={tableRows}
+          handleScroll={handleScroll}
+          onSelectionChange={setSelectedRows}
+        >
+          <TableHeader>
+            <TableColumn checkbox sortable field="id" sortField="id">
+              ID
+            </TableColumn>
+            <TableColumn sortable field="name" sortField="name">
+              Name
+            </TableColumn>
+            <TableColumn field="url">URL</TableColumn>
+            <TableColumn field="details">Detalles</TableColumn>
+          </TableHeader>
+          <TableBody>
+            <TableData checkbox field="id" />
+            <TableData field="name" />
+            <TableData field="url" />
+            <TableData field="details" />
+          </TableBody>
+        </Table>
       </div>
-      {/* <div style={{ marginTop: "3rem", border: "1px solid black" }}>
-        <InfiniteScroll />
-      </div> */}
     </>
   );
 };
 
 export default App;
+
+// TODO:
+// Insertar componentes o tener defaults en el td
+// sticky header opcional
+// infinite scroll opcional
+// footer opcional
+// que un objeto pueda tener checkbox (poder tener otro field para el check opcional?)
+// loading de la paginacion
+// loading de la carga inicial
+// mensaje de error
+// mensaje de no resultados
