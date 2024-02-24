@@ -1,20 +1,31 @@
 import "../css/Datatable.css";
-import React, { useEffect, useState } from "react";
-import TableHeader from "./TableHeader";
-import TableBody from "./TableBody";
+import React, { createContext, useCallback, useEffect, useState } from "react";
+import Spinner from "../components/Spinner";
 
-interface Props {
-  children: React.ReactNode;
-  data: any[];
-  handleScroll: (e: any) => void;
-  onSelectionChange?: React.Dispatch<React.SetStateAction<any[]>>;
-}
+export const TableContext = createContext<any>(null);
 
-const Table: React.FC<Props> = ({
+const Table = ({
   children,
   data,
-  handleScroll,
+  loading,
+  height,
+  infiniteScroll,
+  updatePageNumber,
+  infiniteScrollButton,
   onSelectionChange,
+  selectAllOnLoad,
+  stickyHeaders,
+}: {
+  children: React.ReactNode;
+  data: any[];
+  loading: boolean;
+  height?: number; // si tiene infinitescroll y no tiene el boton, es obligatorio
+  infiniteScroll?: boolean; // en pack junto con updatePageNumber
+  updatePageNumber?: React.Dispatch<React.SetStateAction<any>>; // solo es util si tiene paginacion (se debe modificar a como se vaya a manejar en la API)
+  infiniteScrollButton?: boolean; // en pack junto con infiniteScroll y updatePageNumber en caso de ser activado
+  onSelectionChange?: React.Dispatch<React.SetStateAction<any[]>>; // es obligatorio si tiene checkbox alguna columna
+  selectAllOnLoad?: boolean;
+  stickyHeaders?: boolean;
 }) => {
   const [sortedData, setSortedData] = useState<any[]>([]);
   const [sortField, setSortField] = useState<string | null>(null);
@@ -62,11 +73,16 @@ const Table: React.FC<Props> = ({
   };
 
   function handleSort(arr: any[], field: string) {
-    setSortedData(
-      sortByStringNumberDate(arr.map((obj) => obj[field])).map((item: any) =>
-        arr.find((obj) => obj[field] === item)
-      )
-    );
+    const auxSortedData = sortByStringNumberDate(
+      arr.map((obj) => obj[field])
+    ).map((item: any) => arr.find((obj) => obj[field] === item));
+
+    setSortedData(auxSortedData);
+
+    if (onSelectionChange) {
+      onSelectionChange(selectAllOnLoad ? auxSortedData : []);
+    }
+    setSelectedRows(selectAllOnLoad ? auxSortedData : []);
   }
 
   function sortByStringNumberDate(arr: any[]) {
@@ -99,43 +115,76 @@ const Table: React.FC<Props> = ({
     }
   }
 
+  const handleScrollDefault = useCallback(
+    (e: any) => {
+      if ((!loading && !infiniteScroll) || infiniteScrollButton) return;
+      const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
+      if (
+        scrollHeight - scrollTop <= clientHeight * 1.5 &&
+        !loading &&
+        updatePageNumber
+      ) {
+        updatePageNumber((prevState: any) => ({
+          ...prevState,
+          actualPage: prevState.actualPage + 10,
+        }));
+      }
+    },
+    [loading]
+  );
+
+  const handleScrollButton = () => {
+    if (!loading && updatePageNumber && infiniteScrollButton) {
+      updatePageNumber((prevState: any) => ({
+        ...prevState,
+        actualPage: prevState.actualPage + 10,
+      }));
+    }
+  };
+
   useEffect(() => {
     if (sortField) {
       handleColumnSort(sortField);
     } else {
       setSortedData(data);
+      if (onSelectionChange) {
+        onSelectionChange(selectAllOnLoad ? data : []);
+      }
+      setSelectedRows(selectAllOnLoad ? data : []);
     }
   }, [data]);
 
   return (
     <div
       className="table-container"
-      onScroll={handleScroll}
-      style={{ overflowY: "auto", height: "400px" }}
+      onScroll={handleScrollDefault}
+      style={{ overflowY: "auto", height: height ? `${height}px` : "auto" }}
     >
-      <table className="responsive-table">
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child)) {
-            if (child.type === TableHeader) {
-              return React.cloneElement(child, {
-                onColumnSort: handleColumnSort,
-                sortField,
-                toggleAllRows,
-                allRowsSelected: selectedRows.length === data.length,
-              } as React.Attributes);
-            } else if (child.type === TableBody) {
-              return React.cloneElement(child, {
-                data: sortedData,
-                toggleRow,
-                selectedRows,
-              } as React.Attributes);
-            } else {
-              return child;
-            }
-          }
-          return null;
-        })}
-      </table>
+      {loading && !infiniteScroll ? (
+        <Spinner />
+      ) : (
+        <table
+          className={`responsive-table ${stickyHeaders && "sticky-headers"}`}
+        >
+          <TableContext.Provider
+            value={{
+              loading,
+              sortedData,
+              sortField,
+              toggleRow,
+              toggleAllRows,
+              selectedRows,
+              allRowsSelected: selectedRows.length === data.length,
+              onColumnSort: handleColumnSort,
+              infiniteScroll,
+              infiniteScrollButton,
+              handleScrollButton,
+            }}
+          >
+            {children}
+          </TableContext.Provider>
+        </table>
+      )}
     </div>
   );
 };

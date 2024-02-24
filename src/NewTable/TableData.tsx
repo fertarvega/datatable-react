@@ -1,21 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
+import { TableContext } from "./Table";
 
-interface Props {
-  children?: React.ReactNode;
+const TableData = ({
+  field,
+  row,
+  checkbox,
+  children,
+}: {
   field: string;
   row?: any;
   checkbox?: boolean;
-  toggleRow?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  selectedRows?: any[];
-}
-
-const TableData: React.FC<Props> = ({
-  row,
-  checkbox,
-  toggleRow,
-  field,
-  selectedRows,
+  children?: React.ReactNode;
 }) => {
+  const { toggleRow, selectedRows } = useContext(TableContext);
   return (
     <td>
       {checkbox && toggleRow && selectedRows && (

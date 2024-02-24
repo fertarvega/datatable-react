@@ -1,26 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
+import { TableContext } from "./Table";
 
 const TableColumn = ({
   checkbox,
   sortable,
   field,
   sortField,
-  sortOrder,
-  onColumnSort,
   children,
-  toggleAllRows,
-  allRowsSelected,
 }: {
   checkbox?: boolean;
   sortable?: boolean;
   field?: string;
   sortField?: string | null;
-  sortOrder?: "asc" | "desc" | "default";
   children: React.ReactNode;
-  onColumnSort?: (field: string) => void;
-  toggleAllRows?: (checked: boolean) => void;
-  allRowsSelected?: boolean;
 }) => {
+  const { onColumnSort, sortOrder, toggleAllRows, allRowsSelected } =
+    useContext(TableContext);
+
   const handleToggleAllRows = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (toggleAllRows) {
       toggleAllRows(e.target.checked);
