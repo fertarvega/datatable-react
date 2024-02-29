@@ -6,6 +6,7 @@ import TableColumn from "./NewTable/TableColumn";
 import TableHeader from "./NewTable/TableHeader";
 import TableBody from "./NewTable/TableBody";
 import TableData from "./NewTable/TableData";
+import TableFooter from "./NewTable/TableFooter";
 
 const App = () => {
   const columns = [
@@ -75,7 +76,7 @@ const App = () => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     console.log(selectedRows);
   }, [selectedRows]);
@@ -96,23 +97,30 @@ const App = () => {
         // infiniteScrollButton
         // selectAllOnLoad
         // stickyHeaders
+        isError={false}
+        errorComponent={<p>Error</p>}
       >
         <TableHeader>
-          <TableColumn checkbox sortable field="id" sortField="id">
+          <TableColumn sortable field="id" sortField="id">
             ID
           </TableColumn>
           <TableColumn sortable field="name" sortField="name">
             Name
           </TableColumn>
           <TableColumn field="url">URL</TableColumn>
-          <TableColumn field="details">Detalles</TableColumn>
+          <TableColumn checkbox field="details">Detalles</TableColumn>
         </TableHeader>
         <TableBody>
-          <TableData checkbox field="id" />
-          <TableData field="name" />
-          <TableData field="url" />
-          <TableData field="details"></TableData>
+          <TableData field="id" type="default" />
+          <TableData field="name" type="default" />
+          <TableData field="url" type="default" />
+          <TableData checkbox field="details" type="custom">
+            <ButtonCustom onClick={() => alert("Yeah! ")}>Status:</ButtonCustom>
+          </TableData>
         </TableBody>
+        <TableFooter>
+          <p>Test</p>
+        </TableFooter>
       </Table>
     </>
   );
@@ -121,9 +129,5 @@ const App = () => {
 export default App;
 
 // TODO:
-// Insertar componentes o tener defaults en el td
-// que un objeto pueda tener checkbox (poder tener otro field para el check opcional?)
-// mensaje de error
-// mensaje de no resultados
 // en la primer carga (al usar infinite scroll) usar el loading de toda la tabla
-// qye el boton o spinner no se muestre si no hay mas resultados y no mueva la tabla
+// que el boton o spinner no se muestre si no hay mas resultados y no mueva la tabla

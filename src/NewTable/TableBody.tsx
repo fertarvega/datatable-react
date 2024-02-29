@@ -27,6 +27,7 @@ const TableBody = ({ children }: { children: React.ReactNode }) => {
                     return React.cloneElement(child, {
                       row: item,
                       field,
+                      idx,
                     } as React.Attributes);
                   } else {
                     return child;

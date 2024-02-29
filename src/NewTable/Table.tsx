@@ -1,6 +1,7 @@
 import "../css/Datatable.css";
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import Spinner from "../components/Spinner";
+import TableFooter from "./TableFooter";
 
 export const TableContext = createContext<any>(null);
 
@@ -15,6 +16,8 @@ const Table = ({
   onSelectionChange,
   selectAllOnLoad,
   stickyHeaders,
+  isError,
+  errorComponent,
 }: {
   children: React.ReactNode;
   data: any[];
@@ -26,6 +29,8 @@ const Table = ({
   onSelectionChange?: React.Dispatch<React.SetStateAction<any[]>>; // es obligatorio si tiene checkbox alguna columna
   selectAllOnLoad?: boolean;
   stickyHeaders?: boolean;
+  isError: boolean;
+  errorComponent: React.ReactNode;
 }) => {
   const [sortedData, setSortedData] = useState<any[]>([]);
   const [sortField, setSortField] = useState<string | null>(null);
@@ -155,37 +160,71 @@ const Table = ({
   }, [data]);
 
   return (
-    <div
-      className="table-container"
-      onScroll={handleScrollDefault}
-      style={{ overflowY: "auto", height: height ? `${height}px` : "auto" }}
-    >
-      {loading && !infiniteScroll ? (
-        <Spinner />
+    <>
+      {isError && errorComponent ? (
+        <>{errorComponent}</>
       ) : (
-        <table
-          className={`responsive-table ${stickyHeaders && "sticky-headers"}`}
-        >
-          <TableContext.Provider
-            value={{
-              loading,
-              sortedData,
-              sortField,
-              toggleRow,
-              toggleAllRows,
-              selectedRows,
-              allRowsSelected: selectedRows.length === data.length,
-              onColumnSort: handleColumnSort,
-              infiniteScroll,
-              infiniteScrollButton,
-              handleScrollButton,
+        <>
+          <div
+            className="table-container"
+            onScroll={handleScrollDefault}
+            style={{
+              overflowY: "auto",
+              height: height ? `${height}px` : "auto",
             }}
           >
-            {children}
-          </TableContext.Provider>
-        </table>
+            {loading && !infiniteScroll ? (
+              <Spinner />
+            ) : (
+              <>
+                {sortedData.length === 0 ? (
+                  <p>No hay datos</p>
+                ) : (
+                  <table
+                    className={`responsive-table ${
+                      stickyHeaders && "sticky-headers"
+                    }`}
+                  >
+                    <TableContext.Provider
+                      value={{
+                        loading,
+                        sortedData,
+                        sortField,
+                        toggleRow,
+                        toggleAllRows,
+                        selectedRows,
+                        allRowsSelected: selectedRows.length === data.length,
+                        onColumnSort: handleColumnSort,
+                        infiniteScroll,
+                        infiniteScrollButton,
+                        handleScrollButton,
+                      }}
+                    >
+                      {React.Children.map(children, (child) => {
+                        if (React.isValidElement(child)) {
+                          if (child.type !== TableFooter) {
+                            return child;
+                          }
+                        }
+                        return null;
+                      })}
+                    </TableContext.Provider>
+                  </table>
+                )}
+              </>
+            )}
+          </div>
+          {React.Children.map(children, (child) => {
+            if (React.isValidElement(child)) {
+              if (child.type === TableFooter) {
+                return <>{child}</>;
+              }
+            }
+            return null;
+          })}
+        </>
       )}
-    </div>
+    </>
   );
 };
 
