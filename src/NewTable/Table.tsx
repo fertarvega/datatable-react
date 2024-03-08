@@ -63,34 +63,34 @@ const Table = ({
     }
   };
 
-  const handleColumnSort = (field: string) => {
+  const handleColumnSort = (
+    field: string,
+    specialType?: string,
+    sortFieldSpecial?: string
+  ) => {
     setSortField(field);
     if (sortOrder === "asc") {
       setSortOrder("desc");
-      handleSort(data, field);
+      setSortedData(
+        sortByProperty([...data], field, specialType, sortFieldSpecial)
+      );
     } else if (sortOrder === "desc") {
       setSortOrder("default");
       setSortedData(data);
     } else {
       setSortOrder("asc");
-      handleSort(data, field);
+      setSortedData(
+        sortByProperty([...data], field, specialType, sortFieldSpecial)
+      );
     }
   };
 
-  function handleSort(arr: any[], field: string) {
-    const auxSortedData = sortByStringNumberDate(
-      arr.map((obj) => obj[field])
-    ).map((item: any) => arr.find((obj) => obj[field] === item));
-
-    setSortedData(auxSortedData);
-
-    if (onSelectionChange) {
-      onSelectionChange(selectAllOnLoad ? auxSortedData : []);
-    }
-    setSelectedRows(selectAllOnLoad ? auxSortedData : []);
-  }
-
-  function sortByStringNumberDate(arr: any[]) {
+  const sortByProperty = (
+    arr: any,
+    property: string,
+    specialType?: string,
+    sortFieldSpecial?: string
+  ) => {
     function convertToDate(dateStr: string): Date {
       const parts = dateStr.split("/");
       return new Date(
@@ -100,25 +100,58 @@ const Table = ({
       );
     }
 
-    if (typeof arr[0] === "number") {
-      return sortOrder === "asc"
-        ? arr.sort((a, b) => a - b)
-        : arr.sort((a, b) => b - a);
-    } else if (
-      typeof arr[0] === "string" &&
-      arr[0].match(/^\d{2}\/\d{2}\/\d{4}$/)
-    ) {
-      return sortOrder === "asc"
-        ? arr.sort(
-            (a, b) => convertToDate(a).getTime() - convertToDate(b).getTime()
-          )
-        : arr.sort(
-            (a, b) => convertToDate(b).getTime() - convertToDate(a).getTime()
-          );
-    } else {
-      return sortOrder === "asc" ? arr.sort() : arr.sort().reverse();
-    }
-  }
+    return arr.sort((a: any, b: any) => {
+      if (specialType === "currency") {
+        return sortOrder === "asc"
+          ? parseFloat(a[property].replace(/[$,]/g, "")) -
+              parseFloat(b[property].replace(/[$,]/g, ""))
+          : parseFloat(b[property].replace(/[$,]/g, "")) -
+              parseFloat(a[property].replace(/[$,]/g, ""));
+      }
+      if (specialType === "object" && sortFieldSpecial) {
+        if (
+          typeof a[sortFieldSpecial] === "string" &&
+          a[sortFieldSpecial].match(/^\d{2}\/\d{2}\/\d{4}$/)
+        ) {
+          return sortOrder === "asc"
+            ? convertToDate(a[sortFieldSpecial]).getTime() -
+                convertToDate(b[sortFieldSpecial]).getTime()
+            : convertToDate(b[sortFieldSpecial]).getTime() -
+                convertToDate(a[sortFieldSpecial]).getTime();
+        }
+        if (typeof a[sortFieldSpecial] === "number") {
+          return sortOrder === "asc"
+            ? a[sortFieldSpecial] - b[sortFieldSpecial]
+            : b[sortFieldSpecial] - a[sortFieldSpecial];
+        }
+        if (typeof a[sortFieldSpecial] === "string") {
+          return sortOrder === "asc"
+            ? a[sortFieldSpecial].localeCompare(b[sortFieldSpecial])
+            : b[sortFieldSpecial].localeCompare(a[sortFieldSpecial]);
+        }
+      }
+      if (
+        typeof a[property] === "string" &&
+        a[property].match(/^\d{2}\/\d{2}\/\d{4}$/)
+      ) {
+        return sortOrder === "asc"
+          ? convertToDate(a[property]).getTime() -
+              convertToDate(b[property]).getTime()
+          : convertToDate(b[property]).getTime() -
+              convertToDate(a[property]).getTime();
+      }
+      if (typeof a[property] === "number") {
+        return sortOrder === "asc"
+          ? a[property] - b[property]
+          : b[property] - a[property];
+      }
+      if (typeof a[property] === "string") {
+        return sortOrder === "asc"
+          ? a[property].localeCompare(b[property])
+          : b[property].localeCompare(a[property]);
+      }
+    });
+  };
 
   const handleScrollDefault = useCallback(
     (e: any) => {

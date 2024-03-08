@@ -7,11 +7,13 @@ const TableColumn = ({
   field,
   sortField,
   children,
+  typeSortField
 }: {
   checkbox?: boolean;
   sortable?: boolean;
   field?: string;
   sortField?: string | null;
+  typeSortField?: string;
   children: React.ReactNode;
 }) => {
   const { onColumnSort, sortOrder, toggleAllRows, allRowsSelected } =
@@ -25,7 +27,7 @@ const TableColumn = ({
 
   const handleColumnSort = () => {
     if (onColumnSort && field) {
-      onColumnSort(field);
+      onColumnSort(field, typeSortField, sortField);
     }
   };
 
